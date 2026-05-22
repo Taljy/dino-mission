@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Loader2, Send, Volume2 } from "lucide-react";
-import { getDinoBySlug } from "../data/dinos";
+import { DINOS } from "../data/dinos";
 import { useSpeech } from "../hooks/useSpeech";
+import HabitatBadges from "../components/HabitatBadges";
+import PeriodTimeline from "../components/PeriodTimeline";
 
 const SUGGESTIONS = [
   "Wie gross war er?",
@@ -12,7 +14,7 @@ const SUGGESTIONS = [
 
 export function DinoDetailPage() {
   const { slug } = useParams<{ slug: string }>();
-  const dino = slug ? getDinoBySlug(slug) : undefined;
+  const dino = slug ? DINOS.find((d) => d.slug === slug) : undefined;
 
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState<string | null>(null);
@@ -109,6 +111,11 @@ export function DinoDetailPage() {
               {f}
             </div>
           ))}
+        </div>
+
+        <div className="mt-4 space-y-4">
+          <HabitatBadges dino={dino} />
+          <PeriodTimeline dino={dino} />
         </div>
 
         <section className="mt-6 rounded-3xl bg-white/70 p-4 shadow-sm">
