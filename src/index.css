@@ -13,9 +13,15 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: #f2e4c4;
   color: #3d2e20;
   overscroll-behavior: none;
+}
+
+body {
+  background-color: #f2e4c4;
+  background-image: url("/branding/bg-pattern.jpg");
+  background-repeat: repeat;
+  background-size: 400px 400px;
 }
 
 #root {
