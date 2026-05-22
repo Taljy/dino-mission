@@ -18,7 +18,7 @@ export function DinoDetailPage() {
   const [answer, setAnswer] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { speak, forceSpeak, cancel } = useSpeech();
+  const { forceSpeak, cancel } = useSpeech();
 
   useEffect(() => {
     return () => cancel();
@@ -57,8 +57,8 @@ export function DinoDetailPage() {
         throw new Error(data.error ?? "Keine Antwort erhalten");
       }
       setAnswer(data.answer);
-      // Auto-TTS — speak() gates internally via settings.speechEnabled
-      speak(data.answer);
+      // Kein Auto-Vorlesen — der manuelle Vorlesen-Button unter der
+      // Antwort triggert forceSpeak() bei Bedarf.
     } catch {
       setError("Der Dino-Profi macht gerade Pause. Probier später nochmal!");
     } finally {
