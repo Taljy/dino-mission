@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Loader2, Send, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, Loader2, Send, Volume2 } from "lucide-react";
 import { getDinoBySlug } from "../data/dinos";
 import { useSpeech } from "../hooks/useSpeech";
 
@@ -18,8 +18,7 @@ export function DinoDetailPage() {
   const [answer, setAnswer] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [autoTTS, setAutoTTS] = useState(true);
-  const { speak, cancel } = useSpeech();
+  const { speak, forceSpeak, cancel } = useSpeech();
 
   useEffect(() => {
     return () => cancel();
@@ -58,7 +57,8 @@ export function DinoDetailPage() {
         throw new Error(data.error ?? "Keine Antwort erhalten");
       }
       setAnswer(data.answer);
-      if (autoTTS) speak(data.answer);
+      // Auto-TTS — speak() gates internally via settings.speechEnabled
+      speak(data.answer);
     } catch {
       setError("Der Dino-Profi macht gerade Pause. Probier später nochmal!");
     } finally {
@@ -112,24 +112,9 @@ export function DinoDetailPage() {
         </div>
 
         <section className="mt-6 rounded-3xl bg-white/70 p-4 shadow-sm">
-          <div className="mb-2 flex items-center justify-between">
-            <h2 className="font-display text-2xl text-dino-text">
-              Frag den Dino-Profi!
-            </h2>
-            <button
-              type="button"
-              onClick={() => {
-                setAutoTTS((v) => !v);
-                cancel();
-              }}
-              className="rounded-full bg-sand-base p-2 text-dino-text shadow-sm"
-              aria-label={
-                autoTTS ? "Vorlesen ausschalten" : "Vorlesen einschalten"
-              }
-            >
-              {autoTTS ? <Volume2 size={20} /> : <VolumeX size={20} />}
-            </button>
-          </div>
+          <h2 className="mb-2 font-display text-2xl text-dino-text">
+            Frag den Dino-Profi!
+          </h2>
 
           <div className="mb-3 flex flex-wrap gap-2">
             {SUGGESTIONS.map((s) => (
@@ -177,7 +162,17 @@ export function DinoDetailPage() {
           )}
           {answer && !loading && (
             <div className="mt-3 rounded-2xl bg-sand-base/80 px-3 py-3 font-display text-lg leading-snug text-dino-text">
-              {answer}
+              <p>{answer}</p>
+              <button
+                type="button"
+                onClick={() => forceSpeak(answer)}
+                className="mt-2 flex items-center gap-1 rounded-full bg-white/80 px-3 py-1 text-sm font-bold text-dino-text shadow-sm active:translate-y-0.5"
+                aria-label="Antwort vorlesen"
+                style={{ minHeight: 36 }}
+              >
+                <Volume2 size={16} />
+                Vorlesen
+              </button>
             </div>
           )}
           {error && !loading && (

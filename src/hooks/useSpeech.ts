@@ -1,10 +1,18 @@
 import { useCallback } from "react";
+import { useSettings } from "./useSettings";
 
 export function useSpeech() {
   const supported =
     typeof window !== "undefined" && "speechSynthesis" in window;
+  const { settings } = useSettings();
+  const enabled = settings.speechEnabled;
 
-  const speak = useCallback(
+  const cancel = useCallback(() => {
+    if (!supported) return;
+    window.speechSynthesis.cancel();
+  }, [supported]);
+
+  const _doSpeak = useCallback(
     (text: string) => {
       if (!supported) return;
       const synth = window.speechSynthesis;
@@ -18,10 +26,19 @@ export function useSpeech() {
     [supported],
   );
 
-  const cancel = useCallback(() => {
-    if (!supported) return;
-    window.speechSynthesis.cancel();
-  }, [supported]);
+  // Auto / passive TTS — gated by settings. Always cancels ongoing speech.
+  const speak = useCallback(
+    (text: string) => {
+      if (!supported) return;
+      window.speechSynthesis.cancel();
+      if (!enabled) return;
+      _doSpeak(text);
+    },
+    [supported, enabled, _doSpeak],
+  );
 
-  return { speak, cancel, supported };
+  // Manual / explicit user-triggered TTS — always speaks, ignores setting.
+  const forceSpeak = _doSpeak;
+
+  return { speak, forceSpeak, cancel, supported };
 }

@@ -6,6 +6,7 @@ import { useSound } from "../hooks/useSound";
 import { useSpeech } from "../hooks/useSpeech";
 import { QuizQuestion, type Feedback } from "../components/QuizQuestion";
 import { Confetti } from "../components/Confetti";
+import { SettingsToggles } from "../components/SettingsToggles";
 
 const TOTAL_QUESTIONS = 5;
 const CORRECT_DELAY_MS = 1500;
@@ -96,7 +97,12 @@ export function QuizPage() {
   return (
     <div className="min-h-screen pb-10">
       {feedback === "correct" && <Confetti />}
-      <div className="mx-auto flex max-w-md flex-col px-5 pt-6">
+      <div className="mx-auto max-w-md">
+        <div className="flex justify-end px-4 pt-4">
+          <SettingsToggles />
+        </div>
+      </div>
+      <div className="mx-auto flex max-w-md flex-col px-5 pt-2">
         <QuizQuestion
           correct={round.correct}
           options={round.options}

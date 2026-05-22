@@ -1,4 +1,5 @@
 import { useCallback, useRef } from "react";
+import { useSettings } from "./useSettings";
 
 type Ctx = AudioContext | null;
 
@@ -44,17 +45,27 @@ function tone(
 
 export function useSound() {
   const ctxRef = useRef<Ctx>(null);
+  const { settings } = useSettings();
+  const enabled = settings.soundEnabled;
 
-  const playCorrect = useCallback(() => {
+  // Internal: always plays, ignores the setting.
+  const _playClick = useCallback(() => {
     const ctx = getCtx(ctxRef);
     if (!ctx) return;
-    // C5, E5, G5
+    tone(ctx, 800, 0, 80, "square", 0.1);
+  }, []);
+
+  const playCorrect = useCallback(() => {
+    if (!enabled) return;
+    const ctx = getCtx(ctxRef);
+    if (!ctx) return;
     tone(ctx, 523.25, 0.0, 140, "triangle");
     tone(ctx, 659.25, 0.1, 140, "triangle");
     tone(ctx, 783.99, 0.2, 220, "triangle");
-  }, []);
+  }, [enabled]);
 
   const playWrong = useCallback(() => {
+    if (!enabled) return;
     const ctx = getCtx(ctxRef);
     if (!ctx) return;
     const osc = ctx.createOscillator();
@@ -68,13 +79,15 @@ export function useSound() {
     osc.connect(g).connect(ctx.destination);
     osc.start();
     osc.stop(ctx.currentTime + 0.45);
-  }, []);
+  }, [enabled]);
 
   const playClick = useCallback(() => {
-    const ctx = getCtx(ctxRef);
-    if (!ctx) return;
-    tone(ctx, 800, 0, 80, "square", 0.1);
-  }, []);
+    if (!enabled) return;
+    _playClick();
+  }, [enabled, _playClick]);
 
-  return { playCorrect, playWrong, playClick };
+  // For the Settings UI: confirm-blip when toggling sound ON, bypasses gate.
+  const forcePlayClick = _playClick;
+
+  return { playCorrect, playWrong, playClick, forcePlayClick };
 }
