@@ -34,15 +34,13 @@ export function HomePage() {
       </div>
       <div className="mx-auto flex max-w-md flex-col items-center px-5 pt-2">
         <Logo />
-        <p className="mt-2 font-display text-xl text-dino-text-light">
-          Bist du bereit, Forscher?
-        </p>
 
-        <div className="my-4 flex h-[280px] w-full items-center justify-center">
+        <div className="my-4 flex justify-center">
           <img
-            src="/dinos/trex.png"
-            alt="T-Rex"
-            className="max-h-[280px] w-auto animate-bounce-slow object-contain drop-shadow-xl"
+            src="/branding/hero-andrin.png"
+            alt="Andrin der Dino-Forscher"
+            className="h-auto w-full max-w-sm"
+            loading="eager"
           />
         </div>
 
